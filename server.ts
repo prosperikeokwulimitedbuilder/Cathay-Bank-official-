@@ -29,6 +29,9 @@ import {
     buildPasswordChangedSuccessEmail,
     buildLogin2FAEmail,
     buildTransferProcessingNotificationEmail,
+    buildTransferOtpEmail,
+    buildAccountInactiveEmail,
+    buildAccountFrozenEmail,
     buildAccountStatusChangedEmail,
     buildSystemTestEmail,
     getServerEmailConfigStatus,
@@ -662,19 +665,24 @@ app.post("/api/auth/login", async (req, res) => {
 
         const greetingName = foundUser.name ? `Dear ${foundUser.name}, ` : 'Dear Valued Customer, ';
 
+        if (!isAdminUser(foundUser) && (foundUser.accountStatus === 'inactive' || foundUser.isInactive)) {
+            return res.status(403).json({
+                success: false,
+                isInactive: true,
+                error: `Dear ${foundUser.name || 'Valued Customer'}, your account is inactive. Please contact the customer support team at supportcathaybankusa@gmail.com to activate your account.`
+            });
+        }
+
         if (foundUser.isBlocked) {
             return res.status(403).json({
                 success: false,
                 isBlocked: true,
-                error: foundUser.blockMessage || `${greetingName}your online banking access has been suspended by Bank Administration. Please contact our 24/7 Security Operations Center at support@cathaybankusa.com or supportcathaybank@gmail.com.`
+                error: foundUser.blockMessage || `${greetingName}your online banking access has been suspended by Bank Administration. Please contact our 24/7 Security Operations Center at supportcathaybankusa@gmail.com.`
             });
         }
 
-        if (foundUser.isFrozen) {
-            // Attach personalized freeze advisory message
-            if (!foundUser.freezeMessage) {
-                foundUser.freezeMessage = `${greetingName}your Cathay Bank account is currently subject to a temporary administrative security hold (Frozen). Outgoing transactions, wire transfers, and self-service account modifications are suspended. Please contact Cathay Bank Customer Care at support@cathaybankusa.com or supportcathaybank@gmail.com.`;
-            }
+        if (foundUser.isFrozen || foundUser.accountStatus === 'frozen') {
+            foundUser.freezeMessage = `Dear ${foundUser.name || 'Customer'}, your account is frozen. Please contact support for help at supportcathaybankusa@gmail.com.`;
         }
 
         if (!isAdminUser(foundUser) && foundUser.emailVerified === false) {
@@ -802,7 +810,7 @@ app.post("/api/auth/send-email", async (req, res) => {
         if (!email || typeof email !== 'string') {
             return res.status(400).json({ error: "Valid email address is required" });
         }
-        if (['reset', 'login_2fa', 'verification'].includes(type) && (!code || !/^\d{6}$/.test(code))) {
+        if (['reset', 'login_2fa', 'verification', 'transfer_otp'].includes(type) && (!code || !/^\d{6}$/.test(code))) {
             return res.status(400).json({ error: "A valid 6-digit verification code is required." });
         }
 
@@ -895,6 +903,32 @@ app.post("/api/auth/send-email", async (req, res) => {
             subject = template.subject;
             bodyHtml = template.bodyHtml;
             emailType = "Transfer Pending";
+        } else if (type === "transfer_otp") {
+            const template = buildTransferOtpEmail({
+                userName: customerName,
+                code: code || "000000",
+                amount: typeof amount === "number" ? amount : parseFloat(amount) || 0,
+                currency: currency || "USD",
+                recipientName: recipientName || "Beneficiary",
+                recipientAccount: recipientAccount || ""
+            });
+            subject = template.subject;
+            bodyHtml = template.bodyHtml;
+            emailType = "Transfer Authorization Code";
+        } else if (type === "account_inactive") {
+            const template = buildAccountInactiveEmail({
+                userName: customerName
+            });
+            subject = template.subject;
+            bodyHtml = template.bodyHtml;
+            emailType = "Account Inactive Notice";
+        } else if (type === "account_frozen") {
+            const template = buildAccountFrozenEmail({
+                userName: customerName
+            });
+            subject = template.subject;
+            bodyHtml = template.bodyHtml;
+            emailType = "Account Frozen Notice";
         } else {
             // Default to Email Verification
             const template = buildEmailVerificationEmail({

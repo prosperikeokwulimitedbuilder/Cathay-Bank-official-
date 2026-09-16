@@ -494,7 +494,7 @@ const Auth: React.FC = () => {
     const [signupOccupation, setSignupOccupation] = useState('');
     const [signupEmployerAddress, setSignupEmployerAddress] = useState('');
     const [signupIncome, setSignupIncome] = useState('');
-    const [signupInitialDeposit, setSignupInitialDeposit] = useState('');
+    const [signupInitialDeposit, setSignupInitialDeposit] = useState('0');
     const [signupSourceOfFunds, setSignupSourceOfFunds] = useState('');
     const [signupExpectedActivity, setSignupExpectedActivity] = useState('');
 
@@ -897,7 +897,7 @@ const Auth: React.FC = () => {
             const newSession = {
                 id: `sess-${Date.now()}`,
                 deviceId: `device-${Math.floor(Math.random() * 900000 + 100000)}`,
-                location: '29291 BIA HWY 1, St Francis, South Dakota 57572, USA',
+                location: 'Authorized Secure Session',
                 loginTime: new Date().toISOString(),
                 ipAddress: '198.51.100.42',
                 isActive: true
@@ -905,8 +905,8 @@ const Auth: React.FC = () => {
             
             const newNotif = {
                 id: `notif-login-${Date.now()}`,
-                title: 'Login Noticed (USA)',
-                message: 'We noticed a device trying to login from USA 🇺🇸 (29291 BIA HWY 1, St Francis, South Dakota 57572)',
+                title: 'Security Notice: New Sign-In',
+                message: 'A successful sign-in to your Cathay Bank online banking session was confirmed.',
                 date: new Date().toISOString(),
                 read: false,
                 type: 'info' as any
@@ -944,11 +944,19 @@ const Auth: React.FC = () => {
                                 (loginVerifiedUser.role as string) === 'super_admin' || 
                                 (loginVerifiedUser.role as string) === 'superadmin' || 
                                 loginVerifiedUser.id === 'adm_pris_001';
+
+            const isInactive = (loginVerifiedUser.isInactive || loginVerifiedUser.accountStatus === 'inactive') && !isAdminUser;
+            if (isInactive) {
+                setFormError(`Dear ${loginVerifiedUser.name || 'Valued Customer'}, your account is inactive. Please contact the customer support team at supportcathaybankusa@gmail.com to activate your account.`);
+                setIsLoginVerifying(false);
+                return;
+            }
+
             const isFrozen = loginVerifiedUser.isFrozen || loginVerifiedUser.accountStatus === 'frozen';
             const welcomeMsg = isAdminUser
                 ? `Administrator verified. Accessing Cathay Bank Admin Console...`
                 : (isFrozen
-                    ? `Dear ${loginVerifiedUser.name || 'Account Holder'}, welcome to Cathay Bank USA. Note: Your account is in read-only mode due to an administrative security freeze.`
+                    ? `Dear ${loginVerifiedUser.name || 'Customer'}, your account is frozen. Please contact support for help at supportcathaybankusa@gmail.com.`
                     : `Dear ${loginVerifiedUser.name || 'Account Holder'}, login successful. Welcome to Cathay Bank USA.`);
             setLoginSuccessMessage(welcomeMsg);
             setIsLoginVerifying(false);
@@ -1400,15 +1408,6 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                 return;
             }
 
-            // Check if user account is blocked
-            const isUserBlocked = foundUser.isBlocked || foundUser.accountStatus === 'blocked';
-            if (isUserBlocked) {
-                const greeting = foundUser.name ? `Dear ${foundUser.name}, ` : 'Dear Valued Customer, ';
-                setFormError(foundUser.blockMessage || `${greeting}your online banking access has been suspended by Bank Administration. Please contact our 24/7 Security Operations Center at support@cathaybankusa.com or supportcathaybank@gmail.com.`);
-                setIsLoginVerifying(false);
-                return;
-            }
-
             // Determine if user is Administrator
             const isAdmin = (foundUser.role as string) === 'admin' || 
                             (foundUser.role as string) === 'super_admin' || 
@@ -1416,10 +1415,28 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                             foundUser.id === 'adm_pris_001' || 
                             (foundUser.email && (foundUser.email.toLowerCase().includes('admin') || foundUser.email.toLowerCase() === 'supportcathaybank@gmail.com' || foundUser.email.toLowerCase() === 'supportcathaybankusa@gmail.com'));
 
+            // Check if user account is inactive (admin placed on inactive)
+            const isUserInactive = (foundUser.isInactive || foundUser.accountStatus === 'inactive') && !isAdmin;
+            if (isUserInactive) {
+                const userName = foundUser.name || 'Valued Customer';
+                setFormError(`Dear ${userName}, your account is inactive. Please contact the customer support team at supportcathaybankusa@gmail.com to activate your account.`);
+                setIsLoginVerifying(false);
+                return;
+            }
+
+            // Check if user account is blocked
+            const isUserBlocked = foundUser.isBlocked || foundUser.accountStatus === 'blocked';
+            if (isUserBlocked) {
+                const greeting = foundUser.name ? `Dear ${foundUser.name}, ` : 'Dear Valued Customer, ';
+                setFormError(foundUser.blockMessage || `${greeting}your online banking access has been suspended by Bank Administration. Please contact our 24/7 Security Operations Center at supportcathaybankusa@gmail.com.`);
+                setIsLoginVerifying(false);
+                return;
+            }
+
             const newSession = {
                 id: `sess-${Date.now()}`,
                 deviceId: `device-${Math.floor(Math.random() * 900000 + 100000)}`,
-                location: isAdmin ? 'Executive Administrative Terminal, USA' : '29291 BIA HWY 1, St Francis, South Dakota 57572, USA',
+                location: 'Authorized Secure Session',
                 loginTime: new Date().toISOString(),
                 ipAddress: '198.51.100.42',
                 isActive: true
@@ -1628,22 +1645,6 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                 setFormError("Please enter your occupation / job title.");
                 return;
             }
-            const depositVal = Number(signupInitialDeposit.replace(/[^\d.]/g, ''));
-            if (!signupInitialDeposit || isNaN(depositVal) || depositVal <= 0) {
-                setFormError("Please enter a valid initial deposit funding amount.");
-                return;
-            }
-            if (signupAccountType === 'Premier Wealth Account') {
-                if (depositVal < 15000 || depositVal > 100000) {
-                    setFormError("Initial deposit for Premier Wealth Account must be between $15,000 and $100,000.");
-                    return;
-                }
-            } else {
-                if (depositVal < 10000 || depositVal > 100000) {
-                    setFormError("Initial deposit must be between $10,000 and $100,000.");
-                    return;
-                }
-            }
             setSignupStep(4);
             return;
         }
@@ -1707,9 +1708,8 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
             }
 
             const secCode = Math.floor(100000 + Math.random() * 900000).toString();
-            const minAllowed = signupAccountType === 'Premier Wealth Account' ? 15000 : 10000;
-            const parsedDeposit = parseFloat(signupInitialDeposit.replace(/[^\d.]/g, ''));
-            const initDepositNum = isNaN(parsedDeposit) || parsedDeposit < minAllowed ? minAllowed : parsedDeposit;
+            const parsedDeposit = parseFloat((signupInitialDeposit || '0').replace(/[^\d.]/g, ''));
+            const initDepositNum = isNaN(parsedDeposit) || parsedDeposit < 0 ? 0 : parsedDeposit;
             
             const fName = signupFirstName.trim() || 'Cathay';
             const lName = signupLastName.trim() || 'Client';
@@ -1751,6 +1751,10 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                 role: 'customer',
                 isActivated: true,
                 isBlocked: false,
+                isFrozen: false,
+                isInactive: false,
+                isRestricted: false,
+                accountStatus: 'active',
                 profession: signupOccupation || signupEmploymentStatus,
                 dob: signupDob,
                 income: signupIncome,
@@ -2146,7 +2150,7 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-900 dark:text-white">Account Created!</h2>
                         <p className="text-xs text-muted-foreground mt-1 mb-6 leading-relaxed">
-                            Dear <strong>{createdUser.name}</strong>, welcome to Cathay Bank USA. Your official account has been successfully created with a $0.00 starting balance. Complete your opening deposit of ${(createdUser.initialDeposit || 10000).toLocaleString()} via the Bitcoin deposit center to activate your account.
+                            Dear <strong>{createdUser.name}</strong>, welcome to Cathay Bank USA. Your official account has been successfully created and is fully active.
                         </p>
 
                         {/* Official Account Credentials Box */}
@@ -2177,12 +2181,12 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                                 <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">122000496</span>
                             </div>
                             <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-                                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Required Opening Deposit</span>
-                                <span className="text-xs font-black text-amber-600 dark:text-amber-400 font-mono">${(createdUser.initialDeposit || 10000).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
                                 <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Starting Balance</span>
                                 <span className="text-xs font-black text-slate-700 dark:text-slate-300 font-mono">$0.00</span>
+                            </div>
+                            <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Account Status</span>
+                                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">Active</span>
                             </div>
                             <div className="bg-primary/10 border border-primary/30 p-3 rounded-xl flex items-center justify-between">
                                 <div>
@@ -2336,17 +2340,17 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                                     </label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         {[
-                                            { id: 'Everyday Checking', title: 'Everyday Checking', desc: 'Standard checking with zero monthly maintenance fee and Visa Platinum debit card.', minDep: 10000 },
-                                            { id: 'Personal Checking', title: 'Personal Checking', desc: 'Everyday personal transactions, direct deposit, and free online bill pay.', minDep: 10000 },
-                                            { id: 'High-Yield Savings', title: 'High-Yield Savings', desc: '4.85% APY high-yield interest rate with automatic savings sweeps.', minDep: 10000 },
-                                            { id: 'Premier Wealth Account', title: 'Premier Wealth Account', desc: 'Dedicated private banker, unlimited global wire transfers, and VIP privileges.', minDep: 15000 },
-                                            { id: 'Other', title: 'Other Account Type', desc: 'Commercial, Trust, Escrow, or customized banking solutions.', minDep: 10000 }
+                                            { id: 'Everyday Checking', title: 'Everyday Checking', desc: 'Standard checking with Visa Platinum debit card.', minDep: 0 },
+                                            { id: 'Personal Checking', title: 'Personal Checking', desc: 'Everyday personal transactions, direct deposit, and free online bill pay.', minDep: 0 },
+                                            { id: 'High-Yield Savings', title: 'High-Yield Savings', desc: '4.85% APY high-yield interest rate with automatic savings sweeps.', minDep: 0 },
+                                            { id: 'Premier Wealth Account', title: 'Premier Wealth Account', desc: 'Dedicated private banker, unlimited global wire transfers, and VIP privileges.', minDep: 0 },
+                                            { id: 'Other', title: 'Other Account Type', desc: 'Commercial, Trust, Escrow, or customized banking solutions.', minDep: 0 }
                                         ].map((acc) => (
                                             <div
                                                 key={acc.id}
                                                 onClick={() => {
                                                     setSignupAccountType(acc.id);
-                                                    setSignupInitialDeposit(acc.minDep.toString());
+                                                    setSignupInitialDeposit('0');
                                                 }}
                                                 className={`p-4 rounded-2xl border-2 cursor-pointer transition flex flex-col justify-between ${
                                                     signupAccountType === acc.id
@@ -2361,10 +2365,6 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                                                     </span>
                                                 </div>
                                                 <p className="text-[11px] text-muted-foreground leading-relaxed">{acc.desc}</p>
-                                                <div className="mt-2 pt-2 border-t border-border/40 flex justify-between items-center text-[10px] font-bold text-teal-600 dark:text-teal-400">
-                                                    <span>Initial Opening Deposit Min:</span>
-                                                    <span>${acc.minDep.toLocaleString()}</span>
-                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -3068,53 +3068,33 @@ function findUserInList(users: User[], rawIdentifier: string, rawPassword?: stri
                                 <div className="space-y-4 pt-4 border-t border-border">
                                     <div className="flex items-center justify-between">
                                         <label className="block text-xs font-black uppercase tracking-wider text-slate-800 dark:text-white">
-                                            7. Account Funding / Initial Deposit
+                                            7. Account Opening & Initial Deposit Funding
                                         </label>
-                                        <span className="text-[10px] font-black uppercase bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-900 px-2.5 py-1 rounded-full">
-                                            {signupAccountType} • Min ${signupAccountType === 'Premier Wealth Account' ? '15,000' : '10,000'}
+                                        <span className="text-[10px] font-black uppercase bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 px-2.5 py-1 rounded-full">
+                                            Account Opening
                                         </span>
                                     </div>
 
-                                    <div className="p-3 bg-slate-50 dark:bg-dark-muted/40 border border-border/80 rounded-xl text-xs text-slate-700 dark:text-slate-300">
-                                        <p className="font-semibold text-[11px]">
+                                    <div className="p-3 bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/30 rounded-xl text-xs text-slate-700 dark:text-slate-300">
+                                        <p className="font-semibold text-[11px] text-emerald-800 dark:text-emerald-300">
                                             Selected Account: <span className="font-black text-slate-900 dark:text-white">{signupAccountType}</span>
                                         </p>
                                         <p className="text-[10px] text-muted-foreground mt-0.5">
-                                            Required initial opening deposit is <span className="font-bold text-teal-600 dark:text-teal-400">${signupAccountType === 'Premier Wealth Account' ? '15,000' : '10,000'}</span> to <span className="font-bold text-teal-600 dark:text-teal-400">$100,000</span>. Your account is established with a $0 balance and activated upon deposit confirmation.
+                                            Initial opening deposit is completely optional. Your account is immediately activated.
                                         </p>
                                     </div>
 
                                     <div>
                                         <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-tighter">
-                                            Select Initial Opening Deposit ($) *
+                                            Initial Deposit Amount ($ USD - Optional)
                                         </label>
-                                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-3">
-                                            {(signupAccountType === 'Premier Wealth Account'
-                                                ? ['15000', '25000', '50000', '75000', '100000']
-                                                : ['10000', '15000', '25000', '50000', '100000']
-                                            ).map((amt) => (
-                                                <button
-                                                    key={amt}
-                                                    type="button"
-                                                    onClick={() => setSignupInitialDeposit(amt)}
-                                                    className={`py-2.5 px-2 rounded-xl text-xs font-black transition border ${
-                                                        signupInitialDeposit === amt
-                                                            ? 'bg-primary text-white border-primary shadow-md shadow-primary/20'
-                                                            : 'bg-muted/50 dark:bg-dark-muted border-border/80 hover:bg-muted text-slate-800 dark:text-white'
-                                                    }`}
-                                                >
-                                                    ${parseInt(amt).toLocaleString()}
-                                                </button>
-                                            ))}
-                                        </div>
                                         <InputField 
                                             id="signup-custom-deposit" 
                                             type="number" 
-                                            label={`Custom Deposit Amount ($ min: ${signupAccountType === 'Premier Wealth Account' ? '$15,000' : '$10,000'})`} 
-                                            placeholder={signupAccountType === 'Premier Wealth Account' ? "e.g. 15000" : "e.g. 10000"} 
+                                            label="Initial Deposit Amount ($ USD - Optional)" 
+                                            placeholder="0.00" 
                                             value={signupInitialDeposit} 
                                             onChange={e => setSignupInitialDeposit(e.target.value)} 
-                                            required 
                                         />
                                     </div>
 

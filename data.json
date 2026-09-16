@@ -2,156 +2,156 @@
   "users": [
     {
       "id": "adm_pris_001",
-      "email": "admin@cathaybank.com",
-      "fcmToken": "fcm_token_yl3u6ds3b7s_1789318616882",
-      "rawPassword": "Admin",
-      "loanBalance": 0,
-      "idCardNumber": "ADM-PRIS-01",
-      "name": "Cathay Bank Manager",
-      "savingsBalance": 0,
-      "password": "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f",
-      "isBlocked": false,
-      "transactions": [],
-      "role": "super_admin",
-      "pin": "1212",
-      "avatar": "https://img.freepik.com/free-vector/doctor-character-background_1270-84.jpg",
       "isActivated": true,
-      "currency": "GBP",
-      "notifications": [],
-      "balance": 99999999,
-      "bvn": "00000000000",
+      "role": "super_admin",
       "sessions": [
         {
-          "id": "sess-1789141635354",
           "loginTime": "2026-09-11T15:47:15.354Z",
-          "location": "Executive Administrative Terminal, USA",
           "ipAddress": "198.51.100.42",
           "isActive": true,
-          "deviceId": "device-525492"
+          "deviceId": "device-525492",
+          "id": "sess-1789141635354",
+          "location": "Executive Administrative Terminal, USA"
         },
         {
-          "location": "Executive Administrative Terminal, USA",
-          "loginTime": "2026-09-11T15:41:31.047Z",
+          "isActive": true,
           "deviceId": "device-324217",
-          "isActive": true,
-          "id": "sess-1789141291046",
-          "ipAddress": "198.51.100.42"
+          "loginTime": "2026-09-11T15:41:31.047Z",
+          "ipAddress": "198.51.100.42",
+          "location": "Executive Administrative Terminal, USA",
+          "id": "sess-1789141291046"
         },
         {
-          "loginTime": "2026-09-11T15:39:57.078Z",
+          "id": "sess-1789141197078",
           "location": "Executive Administrative Terminal, USA",
           "ipAddress": "198.51.100.42",
-          "id": "sess-1789141197078",
+          "loginTime": "2026-09-11T15:39:57.078Z",
           "deviceId": "device-446175",
           "isActive": true
         },
         {
-          "isActive": true,
           "deviceId": "device-495633",
-          "loginTime": "2026-09-11T15:38:08.712Z",
-          "location": "Executive Administrative Terminal, USA",
           "id": "sess-1789141088712",
+          "isActive": true,
+          "location": "Executive Administrative Terminal, USA",
+          "loginTime": "2026-09-11T15:38:08.712Z",
           "ipAddress": "198.51.100.42"
         },
         {
-          "location": "Executive Administrative Terminal, USA",
-          "ipAddress": "198.51.100.42",
-          "loginTime": "2026-09-11T15:36:02.748Z",
           "isActive": true,
           "deviceId": "device-653737",
-          "id": "sess-1789140962748"
-        },
-        {
-          "id": "sess-1789140774457",
-          "loginTime": "2026-09-11T15:32:54.458Z",
-          "deviceId": "device-303162",
-          "isActive": true,
+          "id": "sess-1789140962748",
           "ipAddress": "198.51.100.42",
+          "loginTime": "2026-09-11T15:36:02.748Z",
           "location": "Executive Administrative Terminal, USA"
         },
         {
-          "ipAddress": "198.51.100.42",
           "location": "Executive Administrative Terminal, USA",
-          "loginTime": "2026-09-11T15:30:29.158Z",
-          "deviceId": "device-292559",
-          "id": "sess-1789140629158",
+          "loginTime": "2026-09-11T15:32:54.458Z",
+          "ipAddress": "198.51.100.42",
+          "id": "sess-1789140774457",
+          "deviceId": "device-303162",
           "isActive": true
         },
         {
-          "location": "Executive Administrative Terminal, USA",
+          "loginTime": "2026-09-11T15:30:29.158Z",
           "ipAddress": "198.51.100.42",
-          "id": "sess-1788999074893",
           "isActive": true,
-          "deviceId": "device-819294",
-          "loginTime": "2026-09-10T00:11:14.893Z"
+          "id": "sess-1789140629158",
+          "deviceId": "device-292559",
+          "location": "Executive Administrative Terminal, USA"
         },
         {
-          "ipAddress": "198.51.100.42",
-          "isActive": true,
-          "deviceId": "device-462733",
-          "id": "sess-1788905027535",
+          "id": "sess-1788999074893",
           "location": "Executive Administrative Terminal, USA",
-          "loginTime": "2026-09-08T22:03:47.535Z"
+          "isActive": true,
+          "loginTime": "2026-09-10T00:11:14.893Z",
+          "ipAddress": "198.51.100.42",
+          "deviceId": "device-819294"
+        },
+        {
+          "deviceId": "device-462733",
+          "ipAddress": "198.51.100.42",
+          "loginTime": "2026-09-08T22:03:47.535Z",
+          "isActive": true,
+          "id": "sess-1788905027535",
+          "location": "Executive Administrative Terminal, USA"
         },
         {
           "isActive": true,
           "deviceId": "device-271225",
           "id": "sess-1788903288418",
           "ipAddress": "198.51.100.42",
-          "location": "Executive Administrative Terminal, USA",
-          "loginTime": "2026-09-08T21:34:48.418Z"
-        },
-        {
-          "loginTime": "2026-09-08T21:33:59.287Z",
-          "location": "Executive Administrative Terminal, USA",
-          "isActive": true,
-          "id": "sess-1788903239286",
-          "deviceId": "device-479464",
-          "ipAddress": "198.51.100.42"
-        },
-        {
-          "isActive": true,
-          "deviceId": "device-184938",
-          "ipAddress": "198.51.100.42",
-          "id": "sess-1788895302653",
-          "location": "Executive Administrative Terminal, USA",
-          "loginTime": "2026-09-08T19:21:42.653Z"
-        },
-        {
-          "ipAddress": "198.51.100.42",
-          "isActive": true,
-          "deviceId": "device-294455",
-          "id": "sess-1788878251196",
-          "loginTime": "2026-09-08T14:37:31.196Z",
+          "loginTime": "2026-09-08T21:34:48.418Z",
           "location": "Executive Administrative Terminal, USA"
         },
         {
+          "id": "sess-1788903239286",
+          "location": "Executive Administrative Terminal, USA",
+          "loginTime": "2026-09-08T21:33:59.287Z",
           "ipAddress": "198.51.100.42",
-          "deviceId": "device-592124",
           "isActive": true,
+          "deviceId": "device-479464"
+        },
+        {
+          "id": "sess-1788895302653",
+          "location": "Executive Administrative Terminal, USA",
+          "isActive": true,
+          "loginTime": "2026-09-08T19:21:42.653Z",
+          "ipAddress": "198.51.100.42",
+          "deviceId": "device-184938"
+        },
+        {
+          "location": "Executive Administrative Terminal, USA",
+          "loginTime": "2026-09-08T14:37:31.196Z",
+          "ipAddress": "198.51.100.42",
+          "isActive": true,
+          "id": "sess-1788878251196",
+          "deviceId": "device-294455"
+        },
+        {
           "id": "sess-1788877215246",
+          "isActive": true,
+          "deviceId": "device-592124",
+          "ipAddress": "198.51.100.42",
           "loginTime": "2026-09-08T14:20:15.246Z",
           "location": "Executive Administrative Terminal, USA"
         },
         {
+          "location": "Executive Administrative Terminal, USA",
           "id": "sess-1788864431315",
-          "deviceId": "device-490442",
-          "isActive": true,
           "loginTime": "2026-09-08T10:47:11.315Z",
           "ipAddress": "198.51.100.42",
-          "location": "Executive Administrative Terminal, USA"
+          "deviceId": "device-490442",
+          "isActive": true
         },
         {
+          "id": "sess-1788716528193",
           "deviceId": "device-203727",
           "isActive": true,
-          "loginTime": "2026-09-06T17:42:08.193Z",
           "location": "Executive Administrative Terminal, USA",
           "ipAddress": "198.51.100.42",
-          "id": "sess-1788716528193"
+          "loginTime": "2026-09-06T17:42:08.193Z"
         }
       ],
-      "accountNumber": "0000000001",
-      "phone": "+44 20 7123 4567"
+      "name": "Cathay Bank Manager",
+      "pin": "1212",
+      "email": "supportcathaybank@gmail.com",
+      "password": "2cf82b9e9d0801a7c5eface6db48e7e6a8c5af94df9c3fb0de073d02ca6c2860",
+      "isBlocked": false,
+      "rawPassword": "admincathaybank100",
+      "currency": "GBP",
+      "fcmToken": "fcm_token_c9w60a54l5a_1787031810669",
+      "bvn": "00000000000",
+      "notifications": [],
+      "loanBalance": 0,
+      "avatar": "https://img.freepik.com/free-vector/doctor-character-background_1270-84.jpg",
+      "phone": "+44 20 7123 4567",
+      "savingsBalance": 0,
+      "balance": 99999999,
+      "idCardNumber": "ADM-PRIS-01",
+      "transactions": [],
+      "accountNumber": "0000000001"
     }
   ],
   "messages": [],
@@ -367,6 +367,19 @@
     }
   ],
   "emails": [
+    {
+      "id": "eml_1789557657178_jx6g0",
+      "emailStatus": "Sent",
+      "transactionId": null,
+      "recipient": "ikeokwustizzyprosper@gmail.com",
+      "emailType": "Email Verification",
+      "subject": "This is your verification code for your new account (582914) — Cathay Bank",
+      "body": "\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Verification Code</title>\n</head>\n<body style=\"margin: 0; padding: 24px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.6;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);\">\n    <!-- Institutional Security Header Banner -->\n    <tr>\n      <td style=\"background-color: #0A2540; padding: 10px 24px; text-align: center;\">\n        <span style=\"display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #38bdf8;\">\n          ✦ CATHAY BANK USA • OFFICIAL BANKING NOTIFICATION ✦\n        </span>\n      </td>\n    </tr>\n\n    <!-- Header / Brand -->\n    <tr>\n      <td style=\"padding: 24px 32px 18px 32px; border-bottom: 1px solid #f1f5f9; background: #ffffff;\">\n        <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n          <tr>\n            <td>\n              <table cellspacing=\"0\" cellpadding=\"0\">\n                <tr>\n                  <td style=\"vertical-align: middle;\">\n                    <div style=\"background-color: #C8102E; width: 32px; height: 32px; border-radius: 6px; text-align: center; line-height: 32px; color: #ffffff; font-weight: 900; font-size: 16px; display: inline-block;\">國</div>\n                  </td>\n                  <td style=\"vertical-align: middle; padding-left: 10px;\">\n                    <div style=\"margin: 0; font-size: 18px; font-weight: 900; color: #0066CC; letter-spacing: -0.02em;\">CATHAY BANK</div>\n                    <div style=\"margin: 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;\">Online Banking • Member FDIC</div>\n                  </td>\n                </tr>\n              </table>\n            </td>\n            <td style=\"text-align: right; vertical-align: middle;\">\n              <span style=\"font-size: 10px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 6px; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em;\">VERIFIED SECURE</span>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n\n    <!-- Body Content -->\n    <tr>\n      <td style=\"padding: 32px;\">\n        \n      <h2 style=\"margin: 0 0 16px 0; font-size: 22px; font-weight: 800; color: #0f172a;\">This is your verification code for your new account</h2>\n      <p style=\"margin: 0 0 16px 0; font-size: 15px; color: #334155;\">Dear <strong>Prosper Ikeokwu</strong>,</p>\n      <p style=\"margin: 0 0 20px 0; font-size: 15px; color: #334155;\">\n        Thank you for choosing Cathay Bank. This is your verification code for your new account. Please enter this code to verify your identity and finalize your account opening:\n      </p>\n\n      <div style=\"background-color: #f0fdf4; border: 2px dashed #16a34a; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;\">\n        <span style=\"font-size: 38px; font-weight: 900; letter-spacing: 0.25em; font-family: monospace; color: #15803d; display: inline-block;\">\n          582914\n        </span>\n        <p style=\"margin: 10px 0 0 0; font-size: 13px; color: #166534; font-weight: 600;\">\n          This is your verification code for your new account • Valid for 15 minutes\n        </p>\n      </div>\n\n      <p style=\"margin: 0 0 16px 0; font-size: 14px; color: #334155;\">\n        Please enter this 6-digit confirmation code in your setup window. For your protection and privacy, never disclose this code to anyone. Cathay Bank representatives will never contact you requesting this code.\n      </p>\n\n      <p style=\"margin: 0; font-size: 13px; color: #64748b;\">\n        If you did not initiate this account opening request with Cathay Bank, please disregard this email or contact support@cathaybankusa.com or supportcathaybank@gmail.com immediately.\n      </p>\n    \n      </td>\n    </tr>\n\n    <!-- Footer -->\n    <tr>\n      <td style=\"padding: 24px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.5;\">\n        <p style=\"margin: 0 0 8px 0; font-weight: 700; color: #334155;\">Security & Confidentiality Notice</p>\n        <p style=\"margin: 0 0 12px 0;\">This communication is intended solely for the authorized account holder. Cathay Bank will NEVER request your online banking password, PIN, or one-time verification code via phone call, SMS, or unsolicited email. If you receive an unexpected request for credentials, report it immediately to security desk.</p>\n        <p style=\"margin: 0; color: #94a3b8;\">&copy; 2026 Cathay Bank USA. All rights reserved. Member FDIC. Equal Housing Lender.</p>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>\n",
+      "createdTimestamp": "2026-09-16T11:20:57.389Z",
+      "sentTimestamp": "2026-09-16T11:20:57.389Z",
+      "retryCount": 0,
+      "providerUsed": "resend:43a73f55-2767-4b37-a1d3-d985c011086b"
+    },
     {
       "id": "eml_1789395197500_m407u",
       "emailStatus": "Sent",
